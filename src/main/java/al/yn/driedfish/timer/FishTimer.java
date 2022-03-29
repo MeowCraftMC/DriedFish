@@ -1,25 +1,42 @@
 package al.yn.driedfish.timer;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import cn.hutool.cron.CronUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FishTimer {
-    private ScheduledThreadPoolExecutor pool =
-            new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
+    protected List<IDayChangeListener> dayChangeListeners = new ArrayList<>();
 
     public FishTimer() {
-        pool.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);  // Do not continue.
-
-        pool.scheduleWithFixedDelay(() -> {
-
-        }, 1L, 24 * 60 * 60L, TimeUnit.SECONDS);
+        CronUtil.setMatchSecond(true);
     }
 
     public void run() {
+        CronUtil.start();
 
+        listenDayChange();
+    }
+
+    private void listenDayChange() {
+        CronUtil.schedule("0 0 * * *", (Runnable) () -> {
+            dayChangeListeners.forEach(IDayChangeListener::onDayChanged);
+        });
+    }
+
+    public void registerDayChangeListener(IDayChangeListener listener) {
+        dayChangeListeners.add(listener);
+    }
+
+    public void unregisterDayChangeListener(IDayChangeListener listener) {
+        dayChangeListeners.remove(listener);
+    }
+
+    public void clearDayChangeListeners() {
+        dayChangeListeners.clear();
     }
 
     public void stop() {
-        pool.shutdown();
+        CronUtil.stop();
     }
 }

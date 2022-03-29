@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
 }
 
@@ -22,7 +23,16 @@ dependencies {
 
     compileOnly 'org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT'
     annotationProcessor 'org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT'
+
+    implementation 'cn.hutool:hutool-cron:5.7.22'
 }
+
+shadowJar {
+    dependencies {
+    }
+}
+
+jar.finalizedBy(shadowJar)
 
 def targetJavaVersion = 17
 java {

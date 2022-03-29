@@ -1,5 +1,6 @@
 package al.yn.driedfish;
 
+import al.yn.driedfish.api.IFishAPI;
 import al.yn.driedfish.timer.FishTimer;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.plugin.*;
@@ -11,8 +12,10 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 @LogPrefix("DriedFish")
 @Website("https://github.com/MeowCraftMC/DriedFish")
 @ApiVersion(ApiVersion.Target.v1_18)
-public final class DriedFish extends JavaPlugin {
+public final class DriedFish extends JavaPlugin implements IFishAPI {
     private static DriedFish INSTANCE;
+
+    private static final boolean isDev = Boolean.parseBoolean(System.getenv().getOrDefault("fish.dev", "false"));
 
     private FishTimer timer;
 
@@ -33,9 +36,16 @@ public final class DriedFish extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+
+        timer.stop();
     }
 
     public static DriedFish getInstance() {
         return INSTANCE;
+    }
+
+    @Override
+    public FishTimer getTimer() {
+        return timer;
     }
 }
